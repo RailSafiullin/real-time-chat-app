@@ -65,7 +65,7 @@ const SendMessage = ({ handleSendMesaage }) => {
                 <div className="">
                     <button
                         type="submit"
-                        className="bg-slate-400 rounded-lg ml-3 px-4 py-1"
+                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold rounded-lg ml-3 px-4 py-2 focus:outline-none focus:shadow-outline"
 
                         // onClick={handleSendClick}
                     >

@@ -15,7 +15,7 @@ const SignupComplete = ({userName}) => {
 
     return (
         <motion.div
-            className="min-h-screen flex flex-col items-center justify-center"
+            className="flex flex-col items-center justify-center"
             initial="initial"
             animate="animate"
             variants={containerVariants}

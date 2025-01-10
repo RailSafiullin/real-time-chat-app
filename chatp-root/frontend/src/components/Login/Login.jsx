@@ -71,7 +71,7 @@ const Login = () => {
 
     return (
         <motion.div
-            className="min-h-screen flex items-center justify-center"
+            className="flex items-center justify-center"
             initial="initial"
             animate="animate"
             variants={containerVariants}

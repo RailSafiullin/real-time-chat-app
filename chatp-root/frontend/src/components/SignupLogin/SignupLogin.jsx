@@ -47,17 +47,26 @@ const SignupLogin = () => {
 
     return (
         <motion.div
-            className="h-screen flex flex-row bg-gray-200"
+            className="h-screen flex flex-col bg-gray-100 justify-center items-center"
             initial="initial"
             animate="animate"
             variants={containerVariants}
         >
-            <div className="flex justify-center items-center w-1/3 border border-r-amber-400">
-                <div className="w-full p-6">
+            <div className="flex justify-center items-center overflow-y-auto w-full max-h-screen">
+                <div className="w-full px-6 max-h-screen">
+                    {currentPage === "landing" && <LandingPage />}
+                    {currentPage === "activated" && <AccountActivatedPage />}
+                    {currentPage === "login" && <Login />}
+                    {currentPage === "signup" && <Signup />}
+                </div>
+            </div>
+            <div className="flex justify-center items-center  w-full  max-w-md">
+                <div className="w-full p-6" >
+                    <div className="flex justify-between"></div>
                     <motion.button
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
-                        className={`w-full ${signupBtnBackground} hover:bg-cyan-700 hover:text-white font-bold py-2 rounded-xl mb-4 transition duration-300`}
+                        className={`w-1/2 mr-2 ${signupBtnBackground} hover:bg-cyan-700 hover:text-white font-bold py-2 rounded-xl mb-4 transition duration-300`}
                         onClick={handleSignup}
                     >
                         Sign Up
@@ -66,7 +75,7 @@ const SignupLogin = () => {
                     <motion.button
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
-                        className={`w-full ${haveAccBtnBackground} hover:bg-cyan-700 hover:text-white font-bold py-2 rounded-xl mb-4 transition duration-300`}
+                        className={`w-1/2 mr-2 ${haveAccBtnBackground} hover:bg-cyan-700 hover:text-white font-bold py-2 rounded-xl mb-4 transition duration-300`}
                         onClick={handleAlreadyHaveAccount}
                     >
                         Have an Account

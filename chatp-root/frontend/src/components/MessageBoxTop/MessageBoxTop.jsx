@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 
 const MessageBoxTop = ({ recipientData, handleRecipientProfileClick }) => {
     return (
-        <div className="bg-teal-900 h-15 px-4 py-4 border border-b-slate-200 text-white text-right sticky top-0">
+        <div className="bg-gradient-to-t from-cyan-700 to-blue-800 h-15 px-4 py-4 border border-b-slate-200 text-white text-right sticky top-0">
             <button
                 type="text"
                 

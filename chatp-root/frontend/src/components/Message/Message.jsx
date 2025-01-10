@@ -19,9 +19,9 @@ const Message = ({ message, currentUserId }) => {
                 className={`py-2 px-4 ${text} whitespace-pre-line`}
             >
                 <p className="">{message.message}</p>
-                {/* <div className="mt-3 flex flex-col ">
+                {<div className="mt-3 flex flex-col ">
                     <p><small>{message.created_at}</small></p>
-                </div> */}
+                </div>}
             </div>
         </div>
     );
