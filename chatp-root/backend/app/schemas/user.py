@@ -31,6 +31,14 @@ class User(UserBase):
 class UserUpdate(User):
     password: str | None
     
+
+class ProfileUpdate(BaseModel):
+    id: str  
+    first_name: str | None
+    last_name: str | None
+    username: str | None
+    phone: str | None
+
 # Additional properties stored in DB
 class UserInDb(UserUpdate):
     # disabled: bool  for disabling the account 

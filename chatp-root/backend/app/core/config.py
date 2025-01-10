@@ -3,8 +3,12 @@ from dotenv import load_dotenv
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # Load environment variables from the .env file in the current directory
-load_dotenv()
+from pathlib import Path
+from os.path import join, dirname
 
+dotenv_path = Path(__file__).parent.parent.joinpath('.env')
+if os.path.exists(dotenv_path):
+    load_dotenv(dotenv_path)
 
 class CommonSettings(BaseSettings):
     API_V_STR: str = os.environ.get('API_V_STR')

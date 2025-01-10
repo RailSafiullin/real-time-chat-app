@@ -7,7 +7,7 @@ from app import schemas
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from app.exceptions import UserCreationError
 from app.core.config import settings
-
+from app.schemas.user import ProfileUpdate
 
 class BaseUserManager:
     '''
@@ -159,6 +159,40 @@ class UserUpdater(BaseUserManager):
             return updated_user
         return None
 
+class UserProfileUpdater(BaseUserManager):
+    '''
+    Update user data in the database.
+
+    Args:
+        id (str): The user's ID.
+        updated_data (schemas.UserUpdate): The updated user data.
+
+    Returns:
+        dict: The updated user data.
+    '''
+    async def update_user(
+        self,
+        user_id,
+        updated_data: ProfileUpdate
+    ) -> schemas.UserInDb | None:
+        
+        result = await self.user_collection.update_one(
+            {'id': user_id},
+            {
+                '$set': {
+                    'first_name': updated_data['first_name'],
+                    'last_name': updated_data['last_name'],
+                    'username': updated_data['username'],
+                    'phone': updated_data['phone']}
+            },
+        )
+        
+        # Check if the document was matched and modified
+        if result.matched_count == 1 and result.modified_count == 1:
+            # If the update was successful, return the updated user data
+            updated_user = await self.get_by_id(user_id)
+            return updated_user
+        return None
 
 # Delete user from database
 

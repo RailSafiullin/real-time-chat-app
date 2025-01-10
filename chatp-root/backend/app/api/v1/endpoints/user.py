@@ -10,7 +10,8 @@ from app import schemas
 from app.crud.user import User
 from app.services.token import TokenManager
 from app.services.worker.tasks import send_account_activation_email
-
+from app.schemas.user import ProfileUpdate
+from fastapi.encoders import jsonable_encoder
 
 router = APIRouter()
 
@@ -103,6 +104,19 @@ async def get_all_user(user_manager: User = Depends(get_user_manager),
                        current_user: schemas.User = Depends(get_current_active_user)):
     users = await user_manager.get_all_except_me(current_user['id'])
     return users
+
+# Update user profile data 
+@router.put('/update/profile/{user_id}', status_code=status.HTTP_200_OK, response_model=schemas.User)
+async def update_user(
+    user_id: str,
+    updated_data: ProfileUpdate,
+    user_manager: User = Depends(get_user_manager),
+    current_user: schemas.User = Depends(get_current_active_user)
+):
+    #updated_data =  updated_data
+    #updated_data =  jsonable_encoder(updated_data)
+    user = await user_manager.update_user(updated_data)
+    return user
 
 
 # Update user data

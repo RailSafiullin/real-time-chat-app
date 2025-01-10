@@ -1,6 +1,6 @@
 import { addTokenToHeaders } from "./tokenService";
 import { apiBaseUrl, apiVersion } from './configCore';
-
+import { json } from "react-router-dom";
 // user -------------------------------------------------------------
 
 const apiBase = apiBaseUrl + apiVersion
@@ -25,6 +25,26 @@ const privateChatsLoader = () =>
     fetchWithAuthHeaders(
         `${apiBase}/chat/private/msg-recipients/`
     );
+
+const userProfileUpdateLoader = async (userId, token, updatedData) => {
+    try {
+        const response = await fetch(`${apiBase}/user/update/profile/${userId}`, {
+            // Correct the request method here
+            headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+            method: "PUT",
+            body: JSON.stringify(updatedData),
+        });
+
+        if (!response.ok) {
+            throw new Error("Error updating user profile");
+        }
+        //console.log(response)
+        return response;
+    } catch (error) {
+        console.error("Error fetching user profile update:", error);
+        throw error;
+    }
+};
 
 // chat -------------------------------------------------------------
 
@@ -126,7 +146,7 @@ const newChatIdLoader = async (userId) => {
             `${apiBase}/chat/private/recipient/create-chat/${userId}`
         );
         const data = await response.json();
-          console.log(data)
+        console.log(data)
         return data.chat_id;
     } catch (error) {
         console.error("Error fetching chat ID:", error);
@@ -141,6 +161,7 @@ export {
     privateChatsLoader,
     usersLoader,
     userProfileLoader,
+    userProfileUpdateLoader,
     myProfileLoader,
     chatIdLoader,
     newChatIdLoader,

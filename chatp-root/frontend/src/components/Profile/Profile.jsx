@@ -5,7 +5,7 @@ import { chatIdLoader, newChatIdLoader } from "../../utilities/apiLoaders";
 const Profile = () => {
     const profile = useLoaderData();
     // console.log(profile);
-    const { first_name, last_name, email, username, phone, active, id } =
+    const { first_name, last_name, email, username, phone, is_active, id } =
         profile;
 
     // handle Continue Chat
@@ -50,7 +50,7 @@ const Profile = () => {
                     <li>Last Name: {last_name}</li>
                     <li>Email: {email}</li>
                     <li>Phone: {phone}</li>
-                    <li>Status: {active ? "Active" : "Not Active"}</li>
+                    <li>Status: {is_active ? "Active" : "Not Active"}</li>
                 </ul>
             </div>
             
