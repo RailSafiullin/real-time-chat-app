@@ -11,11 +11,14 @@ class MessageCreate(MessageBase):
 
 
 class Message(MessageBase):
-    id: str
+    #id: str
     created_by: str
     # created_at=datetime(2023, 10, 4, 21, 5, 52, 637000)
     created_at: datetime
-  
+
+class Messages(BaseModel):
+    messages: list[Message | None]
+    has_next: bool | None
 
 class MessageResponse(Message):
     created_at: str          # Define the field as a string

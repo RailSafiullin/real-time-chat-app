@@ -41,7 +41,7 @@ const router = createBrowserRouter([
                 loader: privateChatsLoader,
                 children: [
                     {
-                        path: "/cp/chat/private/:chatId",
+                        path: "/cp/chat_only/private/:chatId",
                         element: <Messages />,
                         loader: ({ params }) => messageLoader(params.chatId),
                     },

@@ -10,4 +10,5 @@ from .chat import (
     PrivateChatResponse,
     GroupChat,
     GroupChatResponse,
+    Messages
 )

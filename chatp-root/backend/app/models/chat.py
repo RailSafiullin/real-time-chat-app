@@ -17,6 +17,12 @@ class MessageModel(BaseModel):
     created_by: str = Field(...)
     created_at: datetime = Field(default_factory=datetime_now)
 
+class MessageModelChat(BaseModel):
+    chat_id: str = Field(...)
+    message: str = Field(...)
+    created_by: str = Field(...)
+    created_at: datetime = Field(default_factory=datetime_now)
+
 # class MessageResponseModel(MessageModel):
 #     @property
 #     def created_at_str(self):

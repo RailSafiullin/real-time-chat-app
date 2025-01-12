@@ -1,9 +1,9 @@
 from fastapi import HTTPException, status, Depends, APIRouter
 from app.api.v1.dependencies import(
-     get_token_manager, 
-     get_current_active_user, 
-     get_user_manager, 
-     get_current_user
+    get_token_manager, 
+    get_current_active_user, 
+    get_user_manager, 
+    get_current_user
 )
 from app.exceptions import UserCreationError
 from app import schemas
@@ -17,7 +17,7 @@ router = APIRouter()
 
 
 @router.post('/create', status_code=status.HTTP_201_CREATED,
-             response_model=schemas.User)
+            response_model=schemas.User)
 async def create_user(
         user_data: schemas.UserCreate,
         user_manager: User = Depends(get_user_manager),
@@ -98,10 +98,16 @@ async def get_user_detail(user_id: str,
     return user
 
 
+@router.get('/search', status_code=status.HTTP_200_OK, response_model=list[schemas.UserOfAll])
+async def get_all_user(email: str, user_manager: User = Depends(get_user_manager),
+                    current_user: schemas.User = Depends(get_current_active_user)):
+    users = await user_manager.get_search(email)
+    return users
+
 # Get all user
 @router.get('/all', status_code=status.HTTP_200_OK, response_model=list[schemas.UserOfAll])
 async def get_all_user(user_manager: User = Depends(get_user_manager),
-                       current_user: schemas.User = Depends(get_current_active_user)):
+                    current_user: schemas.User = Depends(get_current_active_user)):
     users = await user_manager.get_all_except_me(current_user['id'])
     return users
 

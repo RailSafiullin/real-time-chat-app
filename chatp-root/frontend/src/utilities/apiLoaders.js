@@ -15,8 +15,17 @@ const fetchWithAuthHeaders = (url, headers = {}) => {
 const usersLoader = () =>
     fetchWithAuthHeaders(`${apiBase}/user/all`);
 
+const usersEmailLoader = async (email) => {
+    const response = await fetchWithAuthHeaders(`${apiBase}/user/search?email=${email}`);
+    const data = await response.json();
+    console.log(data)
+    return data;
+}
 const userProfileLoader = (userId) =>
     fetchWithAuthHeaders(`${apiBase}/user/info/${userId}`);
+
+//const userProfileUpdateLoader = (userId) =>
+//    fetchWithAuthHeaders(`${apiBase}/user/update/info/${userId}`);
 
 const myProfileLoader = (userId) =>
     fetchWithAuthHeaders(`${apiBase}/user/info/me`);
@@ -25,26 +34,6 @@ const privateChatsLoader = () =>
     fetchWithAuthHeaders(
         `${apiBase}/chat/private/msg-recipients/`
     );
-
-const userProfileUpdateLoader = async (userId, token, updatedData) => {
-    try {
-        const response = await fetch(`${apiBase}/user/update/profile/${userId}`, {
-            // Correct the request method here
-            headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
-            method: "PUT",
-            body: JSON.stringify(updatedData),
-        });
-
-        if (!response.ok) {
-            throw new Error("Error updating user profile");
-        }
-        //console.log(response)
-        return response;
-    } catch (error) {
-        console.error("Error fetching user profile update:", error);
-        throw error;
-    }
-};
 
 // chat -------------------------------------------------------------
 
@@ -55,6 +44,34 @@ const messageLoader = (chatId) =>
     fetchWithAuthHeaders(
         `${apiBase}/chat/private/info/${chatId}`
     );
+
+const messageLoader1_2 = async (chatId, page) => {
+    const response = await fetchWithAuthHeaders(
+        `${apiBase}/chat/private/info/messages/${chatId}?page=${page}` //&search_query=${searchQuery}&start_time=${startTime}&end_time=${endTime}`
+    );
+    const data = await response.json();
+    console.log(data)
+    return data.messages;
+    //return response;
+}
+
+const messageLoader2 = async (chatId, page, searchQuery, startTime, endTime) => {
+    let url = `${apiBase}/chat/private/info/messages/${chatId}?page=${page}`;
+
+    if (searchQuery) {
+        url += `&search_query=${searchQuery}`;
+    }
+    if (startTime) {
+        url += `&start_time=${startTime}`;
+    }
+    if (endTime) {
+        url += `&end_time=${endTime}`;
+    }
+    const response = await fetchWithAuthHeaders(url);
+    const data = await response.json();
+    console.log(data);
+    return data;
+};
 
 // the following loaders are not directly being used in loader in react router
 // thst's why these are async function
@@ -154,15 +171,39 @@ const newChatIdLoader = async (userId) => {
     }
 };
 
+
+
+const userProfileUpdateLoader = async (userId, token, updatedData) => {
+    try {
+        const response = await fetch(`${apiBase}/user/update/info/${userId}`, {
+            // Correct the request method here
+            headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+            method: "PUT",
+            body: JSON.stringify(updatedData),
+        });
+
+        if (!response.ok) {
+            throw new Error("Error updating user profile");
+        }
+        //console.log(response)
+        return response;
+    } catch (error) {
+        console.error("Error fetching user profile update:", error);
+        throw error;
+    }
+};
+
 export {
     authUserLoader,
     chatsLoader,
     messageLoader,
+    messageLoader2,
     privateChatsLoader,
     usersLoader,
     userProfileLoader,
-    userProfileUpdateLoader,
     myProfileLoader,
     chatIdLoader,
     newChatIdLoader,
+    userProfileUpdateLoader,
+    usersEmailLoader
 };

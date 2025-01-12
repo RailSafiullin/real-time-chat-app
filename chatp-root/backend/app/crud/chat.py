@@ -7,6 +7,7 @@ from app.crud.user import User
 from app.models import (
     GroupChatModel,
     MessageModel,
+    MessageModelChat,
     MessageRecipientModel,
     PrivateChatModel)
 from app import schemas
@@ -31,15 +32,71 @@ class BaseChatManager:
         self.user_manager = user_manager
 
     async def get_chat_by_id(self, chat_id: str) -> dict:
-        chat = await self.chat_collection .find_one({'chat_id': chat_id})
+        chat = await self.chat_collection.find_one({'chat_id': chat_id})
         if not chat:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                                 detail=f'Chat not found')
         return chat
 
     async def get_chat_messages(self, chat_id: str) -> list[schemas.Message]:
-        chat = await self.get_chat_by_id(chat_id)
-        return chat['messages']
+        limit = 100
+        pipeline = [
+            { "$match": { "chat_id": chat_id } },  # Фильтрация по chat_id
+            { "$sort": { "created_at": -1 } },  # Сортировка по dateField в убывающем порядке
+            { "$limit": limit }, # Ограничение результата 2 сообщениями
+            { "$sort": { "created_at": 1 } },
+            #{ "$project": { "_id": 0, "chat_id":0 , "otherFields": 1 } }  # Проекция необходимых полей
+        ]
+        messages = await self.db["Message"].aggregate(pipeline).to_list(None)      
+        return messages
+
+    async def get_chat_messages2(self, chat_id: str) -> list[schemas.Message]:
+        pipeline = [
+            { "$match": { "chat_id": chat_id } },  # Фильтрация по chat_id
+            { "$sort": { "created_at": -1 } },  # Сортировка по dateField в убывающем порядке
+            { "$limit": 10 }, # Ограничение результата 2 сообщениями
+            { "$sort": { "created_at": 1 } },
+            #{ "$project": { "_id": 0, "chat_id":0 , "otherFields": 1 } }  # Проекция необходимых полей
+        ]
+        
+        messages = await self.db["Message"].aggregate(pipeline).to_list(None)      
+        return messages
+        
+
+    async def get_messages(self, chat_id, page=1, search_query=None, start_time=None, end_time=None) -> list[schemas.Messages]:
+        # Ограничить количество сообщений на странице
+        limit = 100
+        skip = (page - 1) * limit
+        pipeline = []
+        
+        if search_query and search_query!="":
+            #pipeline.append({ "$match": { "message": { "$regex": search_query, "$options": "i" } } })
+            pipeline.append({ "$match": { "$text": { "$search": f'"{search_query}"' } } })
+            #pipeline.append({ "$match": { "message": { "$exists": True } } })
+        # Создать список для пайплайна агрегации
+        
+        pipeline.append(
+            { "$match": { "chat_id": chat_id } },  # Фильтрация по chat_id
+        )
+        if start_time and end_time:
+            pipeline.append({ "$match": { "created_at": { "$gte": start_time, "$lte": end_time } } })
+        # Добавить сортировку, пропуск и ограничение результатов
+        pipeline.extend([
+            { "$sort": { "created_at": -1 } },  # Сортировка по dateField в убывающем порядке
+            { "$skip": skip },
+            { "$limit": limit + 1 }, # Ограничение результата 2 сообщениями
+            { "$sort": { "created_at": 1 } },
+        ])
+        
+        # Выполнить агрегацию и получить список сообщений
+        messages = await self.db["Message"].aggregate(pipeline).to_list(None)
+        #print(messages, has_next)
+        has_next = len(messages) > limit
+        print(has_next, len(messages))
+        return {
+            "messages": messages[:limit],
+            "has_next": has_next
+        }
 
     async def get_chats_from_ids(self, chat_ids: list[str]) -> list:
         # Query the collection for matching chat_ids
@@ -69,20 +126,14 @@ class BaseChatManager:
                 detail='Message was not sent!'
             )
 
-        new_message = MessageModel(created_by=current_user_id, message=message)
+        new_message = MessageModelChat(created_by=current_user_id, message=message, chat_id=chat_id)
         print('new_message', new_message)
 
-        result = await self.chat_collection.update_one(
-            {'chat_id': chat_id},
-            {'$push': {'messages': new_message.model_dump()}}
-            # as I pushed new message inside messages,
-            # it will not create any default '_id' for new message
-            # if i use insert_one(), it will automatically create a '_id' field
-        )
+        result = await self.db["Message"].insert_one(new_message.model_dump())
 
-        if result.matched_count == 1 and result.modified_count == 1:
+        #if result.matched_count == 1 and result.modified_count == 1:
             # return {"message": "Item added to profile successfully"}
-            return new_message
+        return new_message
 
 
 class PrivateChatManager(BaseChatManager):

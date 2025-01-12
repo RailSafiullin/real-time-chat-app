@@ -58,7 +58,7 @@ const SendMessage = ({ handleSendMesaage }) => {
                         value={messageText}
                         onChange={handleMessageTextChange}
                         onKeyDown={handleKeyPress}
-                        placeholder="Write text..."
+                        placeholder="Написать сообщение..."
                         autoComplete="off"
                     />
                 </div>
@@ -66,10 +66,10 @@ const SendMessage = ({ handleSendMesaage }) => {
                     <button
                         type="submit"
                         className="bg-blue-500 hover:bg-blue-700 text-white font-bold rounded-lg ml-3 px-4 py-2 focus:outline-none focus:shadow-outline"
-
+                        //className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:shadow-outline"
                         // onClick={handleSendClick}
                     >
-                        Send
+                        Отправить
                     </button>
                 </div>
             </div>

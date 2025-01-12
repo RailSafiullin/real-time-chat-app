@@ -5,10 +5,9 @@ from app.api.v1.dependencies import get_current_user, get_private_chat_manager, 
 from app.database.db import get_db
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from app.core.config import settings
-
 from app.crud.chat import PrivateChatManager
 from app.serializers.chat_serializers import message_serializer
-
+from datetime import datetime
 
 router = APIRouter()
 
@@ -46,10 +45,12 @@ async def get_private_chat(
 ):
 
     chat = await pvt_chat_manager.get_chat_by_id(chat_id)
-    # print('chat', chat)
-    if chat['messages']:
+    chat_messages = await pvt_chat_manager.get_chat_messages(chat_id)
+    chat['messages'] = []
+    # print('chat', chat)s
+    if chat_messages:
         # serialize chat messages
-        serialized_messages = [message_serializer(msg) for msg in chat['messages']]
+        serialized_messages = [message_serializer(msg) for msg in chat_messages]
         chat['messages'] = serialized_messages
     
 
@@ -80,6 +81,67 @@ async def get_recipient_chat_id(
     except HTTPException as e:
         raise e
 
+@router.get('/private/info/messages/{chat_id}',
+            status_code=status.HTTP_200_OK,
+            response_model=schemas.Messages)
+async def get_private_chat(
+    chat_id: str,
+    page: int,
+    search_query: str = None,
+    start_time: datetime = None,
+    end_time: datetime = None,
+    pvt_chat_manager: PrivateChatManager = Depends(get_private_chat_manager),
+    current_user: schemas.User = Depends(get_current_active_user)
+):
+    messages = {}
+    messages['messages'] = []
+    chat_messages = await pvt_chat_manager.get_messages(chat_id, page, search_query=search_query, start_time=start_time, end_time=end_time)
+    messages = {
+        "messages": [],
+        "has_next": chat_messages["has_next"]
+    }
+    print(chat_messages["has_next"])
+    if chat_messages:
+        # serialize chat messages
+        serialized_messages = [message_serializer(msg) for msg in chat_messages["messages"]]
+        messages['messages'] = serialized_messages
+    return messages
+@router.get('/private/info/messages_e/{chat_id}',
+            status_code=status.HTTP_200_OK,
+            response_model=schemas.Messages)
+async def get_private_chat(
+    chat_id: str,
+    page: int,
+    #search_query: str = None,
+    #start_time: datetime = None,
+    #end_time: datetime = None,
+    pvt_chat_manager: PrivateChatManager = Depends(get_private_chat_manager),
+    current_user: schemas.User = Depends(get_current_active_user)
+):
+    messages = {}
+    messages['messages'] = []
+    #chat = await pvt_chat_manager.get_chat_by_id(chat_id)
+    chat_messages = await pvt_chat_manager.get_messages(chat_id, page = page)#, search_query=search_query, start_time=start_time, end_time=end_time)
+    if chat_messages:
+        # serialize chat messages
+        serialized_messages = [message_serializer(msg) for msg in chat_messages]
+        messages['messages'] = serialized_messages
+    
+    return messages
+
+# Get private chat messages 2
+@router.get('/private/messages/{chat_id}/{page}',
+            status_code=status.HTTP_200_OK,
+            response_model=list[schemas.Message])
+async def get_private_messages(
+    chat_id: str,
+    cursor: str,
+    pvt_chat_manager: PrivateChatManager = Depends(get_private_chat_manager),
+    current_user: schemas.User = Depends(get_current_active_user)
+):
+
+    messages = await pvt_chat_manager.get_messages(chat_id, cursor=None)
+    return messages
 
 @router.get('/private/all/',
             status_code=status.HTTP_200_OK,
@@ -125,7 +187,7 @@ async def get_private_messages(
 
 
 # Create new private message
-@ router.post('/private/message/create/{chat_id}',
+@router.post('/private/message/create/{chat_id}',
               status_code=status.HTTP_201_CREATED,
               response_model=schemas.Message)
 async def create_private_message(chat_id: str,

@@ -26,7 +26,7 @@ const Chat = ({ chat }) => {
             {/* <div className="flex flex-col my-2 h-20 w-full justify-center bg-slate-100 border border-blue-500 rounded-md"> */}
 
             {userData ? (
-                <ActiveLink to={`/cp/chat/private/${chat_id}`}>
+                <ActiveLink to={`/cp/chat_only/private/${chat_id}`}>
                     <div className="flex flex-row items-center h-[60px]">
                         <div className="w-[40px] h-[40px] rounded-full bg-blue-500 text-white text-center flex items-center justify-center font-bold text-xl">
                             {userData.username[0]}

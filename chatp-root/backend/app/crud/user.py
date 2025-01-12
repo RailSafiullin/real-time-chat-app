@@ -52,6 +52,23 @@ class BaseUserManager:
         # print(all_users)
         return [user for user in all_users if user.id != current_user_id]
 
+    async def get_search(self, email: str) -> list[schemas.User]:
+        cursor = self.user_collection.find({"email": {"$regex": email, "$options": "i"}})
+        users = await cursor.to_list(length=None)
+
+        serialized_users = []
+        for user in users:
+            serialized_user = serializers.user_serializer(user)
+            serialized_users.append(serialized_user)
+
+        return serialized_users
+
+    async def get_search_except_me(self, current_user_id: str, email: str) -> list[schemas.User]:
+        all_users = await self.get_search()
+        # print(all_users)
+        return [user for user in all_users if user.id != current_user_id]
+
+
     async def insert_private_message_recipient(
             self,
             user_id: str,
