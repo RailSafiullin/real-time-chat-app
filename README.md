@@ -221,6 +221,15 @@ Before you begin, ensure you have met the following requirements:
 - Provide details on user registration and login processes. -->
 
 
+## New:
+
+- **App schemas:**
+![alt text](chatp-root/img/app_schemas.png)
+
+- **:**
+  - Begin by creating individual user profiles with distinct email addresses.
+  - Ensure that each account is uniquely identified to avoid any validation error.
+
 
 ## License
 
