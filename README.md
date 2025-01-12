@@ -222,9 +222,8 @@ Before you begin, ensure you have met the following requirements:
 
 
 ## New:
-
-- **App schemas:**
-![alt text](chatp-root/img/app_schemas.png)
+### App schemas:
+![Api Docs](chatp-root/img/app_schemas.png)
 
 - **:**
   - Begin by creating individual user profiles with distinct email addresses.
