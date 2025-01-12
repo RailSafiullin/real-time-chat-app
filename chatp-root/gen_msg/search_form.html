@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Поиск сообщений</title>
+</head>
+<body>
+    <h1>Поиск сообщений</h1>
+
+    <form action="/search" method="post">
+        <label for="search_text">Текст поиска:</label>
+        <input type="text" id="search_text" name="search_text">
+
+        <label for="user_id">Автор:</label>
+        <select id="user_id" name="user_id">
+            <option value="">Все</option>
+            {% for user_id in users %}
+                <option value="{{ user_id }}">{{ user_id }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="sort_by">Сортировать по:</label>
+        <select id="sort_by" name="sort_by">
+            <option value="created_at">Дате создания</option>
+            <option value="author">Автору</option>
+            <option value="text">Тексту</option>
+        </select>
+
+        <button type="submit">Найти</button>
+    </form>
+</body>
+</html>

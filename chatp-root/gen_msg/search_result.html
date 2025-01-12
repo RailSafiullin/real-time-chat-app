@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Результаты поиска</title>
+</head>
+<body>
+    <h1>Результаты поиска</h1>
+
+    {% if messages %}
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Сообщение</th>
+                <th>Автор</th>
+                <th>Дата создания</th>
+            </tr>
+            {% for message in messages %}
+                <tr>
+                    <td>{{ message.id }}</td>
+                    <td>{{ message.message }}</td>
+                    <td>{{ message.created_by }}</td>
+                    <td>{{ message.created_at }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>Сообщений не найдено.</p>
+    {% endif %}
+</body>
+</html>
